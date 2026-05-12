@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>War Card Game</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        text-align:center;
+        background:#0b6623;
+        color:white;
+    }
+
+    h1{
+        margin-top:20px;
+    }
+
+    #gameArea{
+        display:flex;
+        justify-content:space-around;
+        margin-top:40px;
+    }
+
+    .player{
+        width:40%;
+        padding:20px;
+        border:2px solid white;
+        border-radius:10px;
+        background:rgba(255,255,255,0.1);
+    }
+
+    .card{
+        font-size:40px;
+        margin:20px;
+    }
+
+    .suit{<!DOCTYPE html>
+<html>
+<head>
+
+<title>War Card Game</title>
+
+<style>
+
+body{
+    text-align:center;
+    font-family:Arial;
+    background:darkgreen;
+    color:white;
+}
+
+h1{
+    margin-top:20px;
+}
+
+#gameArea{
+    display:flex;
+    justify-content:center;
+    gap:100px;
+    margin-top:40px;
+}
+
+.player{
+    border:6px solid black;
+    padding:20px;
+    width:250px;
+    background:white;
+    color:black;
+    border-radius:10px;
+}
+
+.card{
+    font-size:80px;
+    margin-top:20px;
+}
+
+.suit{
+    display:block;
+    font-size:60px;
+}
+
+button{
+    padding:12px 24px;
+    font-size:18px;
+    margin-top:30px;
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+    background:red;
+    color:white;
+    transition:.3s;
+}
+
+button:hover{
+    background:darkred;
+    transform:scale(1.1);
+}
+
+#message{
+    margin-top:20px;
+    font-size:24px;
+    font-weight:bold;
+    color:yellow;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>WAR CARD GAME</h1>
+
+<button id="drawButton" onclick="draw()">Draw Cards</button>
+
+<div id="message"></div>
+
+<div id="gameArea">
+
+    <div id="player1Box" class="player">
+
+        <h2>Player 1</h2>
+
+        <div id="p1Card" class="card">?</div>
+
+        <div id="p1Suit" class="suit"></div>
+
+        <p>
+            Cards Left:
+            <span id="p1Count"></span>
+        </p>
+
+    </div>
+
+    <div id="player2Box" class="player">
+
+        <h2>Player 2</h2>
+
+        <div id="p2Card" class="card">?</div>
+
+        <div id="p2Suit" class="suit"></div>
+
+        <p>
+            Cards Left:
+            <span id="p2Count"></span>
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+/////////////////////////////
+// GLOBAL VARIABLES
+/////////////////////////////
+
+let deck = [];
+
+let player1 = [];
+let player2 = [];
+
+let card1;
+let card2;
+
+let playedCards = [];
+
+const suits = ["♠","♥","♦","♣"];
+
+/////////////////////////////
+// CREATE DECK
+/////////////////////////////
+
+function createDeck(){
+
+    deck = [];
+
+    for(let i = 1; i < 14; i++){
+
+        for(let s = 0; s < suits.length; s++){
+
+            deck.push({
+                value:i,
+                suit:suits[s]
+            });
+
+        }
+    }
+}
+
+/////////////////////////////
+// SHUFFLE DECK
+/////////////////////////////
+
+function shuffleDeck(){
+
+    for(let i = deck.length - 1; i > 0; i--){
+
+        let j = Math.floor(Math.random() * (i + 1));
+
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+
+/////////////////////////////
+// DEAL CARDS
+/////////////////////////////
+
+function dealCards(){
+
+    player1 = [];
+    player2 = [];
+
+    for(let i = 0; i < deck.length; i++){
+
+        if(i % 2 == 0){
+            player1.push(deck[i]);
+        }
+
+        else{
+            player2.push(deck[i]);
+        }
+    }
+
+    updateCounts();
+}
+
+/////////////////////////////
+// UPDATE COUNTS
+/////////////////////////////
+
+function updateCounts(){
+
+    document.getElementById("p1Count").innerHTML = player1.length;
+
+    document.getElementById("p2Count").innerHTML = player2.length;
+}
+
+/////////////////////////////
+// DRAW
+/////////////////////////////
+
+function draw(){
+
+    // RESET BORDER COLORS
+
+    document.getElementById("player1Box").style.borderColor = "black";
+
+    document.getElementById("player2Box").style.borderColor = "black";
+
+    // CHECK GAME OVER
+
+    if(player1.length == 0 || player2.length == 0){
+
+        endGame();
+
+        return;
+    }
+
+    assign();
+}
+
+/////////////////////////////
+// ASSIGN CARDS
+/////////////////////////////
+
+function assign(){
+
+    // TAKE TOP CARD
+
+    card1 = player1.shift();
+
+    card2 = player2.shift();
+
+    // STORE PLAYED CARDS
+
+    playedCards.push(card1);
+
+    playedCards.push(card2);
+
+    // SHOW CARDS
+
+    document.getElementById("p1Card").innerHTML =
+    displayValue(card1.value);
+
+    document.getElementById("p2Card").innerHTML =
+    displayValue(card2.value);
+
+    document.getElementById("p1Suit").style.display = "block";
+
+    document.getElementById("p2Suit").style.display = "block";
+
+    document.getElementById("p1Suit").innerHTML = card1.suit;
+
+    document.getElementById("p2Suit").innerHTML = card2.suit;
+
+    updateCounts();
+
+    greater();
+}
+
+/////////////////////////////
+// CHECK WINNER
+/////////////////////////////
+
+function greater(){
+
+    if(card1.value > card2.value){
+
+        document.getElementById("message").innerHTML =
+        "Player 1 Wins Round";
+
+        // RED BORDER
+
+        document.getElementById("player1Box").style.borderColor = "red";
+
+        player1.push(...playedCards);
+
+        playedCards = [];
+
+        updateCounts();
+    }
+
+    else if(card2.value > card1.value){
+
+        document.getElementById("message").innerHTML =
+        "Player 2 Wins Round";
+
+        // RED BORDER
+
+        document.getElementById("player2Box").style.borderColor = "red";
+
+        player2.push(...playedCards);
+
+        playedCards = [];
+
+        updateCounts();
+    }
+
+    else{
+
+        document.getElementById("message").innerHTML = "WAR!";
+
+        war();
+    }
+
+    // CHECK FOR GAME END
+
+    if(player1.length == 0 || player2.length == 0){
+
+        endGame();
+    }
+}
+
+/////////////////////////////
+// WAR FUNCTION
+/////////////////////////////
+
+function war(){
+
+    // CHECK ENOUGH CARDS
+
+    if(player1.length < 4){
+
+        document.getElementById("message").innerHTML =
+        "Player 1 does not have enough cards. Player 2 Wins!";
+
+        endGame();
+
+        return;
+    }
+
+    if(player2.length < 4){
+
+        document.getElementById("message").innerHTML =
+        "Player 2 does not have enough cards. Player 1 Wins!";
+
+        endGame();
+
+        return;
+    }
+
+    // PLACE 3 CARDS FACE DOWN
+
+    for(let i = 0; i < 3; i++){
+
+        playedCards.push(player1.shift());
+
+        playedCards.push(player2.shift());
+    }
+
+    updateCounts();
+
+    // DRAW AGAIN
+
+    assign();
+}
+
+/////////////////////////////
+// END GAME
+/////////////////////////////
+
+function endGame(){
+
+    if(player1.length == 0){
+
+        document.getElementById("message").innerHTML =
+        "🏆 PLAYER 2 WINS THE GAME!";
+    }
+
+    else if(player2.length == 0){
+
+        document.getElementById("message").innerHTML =
+        "🏆 PLAYER 1 WINS THE GAME!";
+    }
+
+    // DISABLE BUTTON
+
+    document.getElementById("drawButton").disabled = true;
+
+    document.getElementById("drawButton").style.opacity = ".5";
+}
+
+/////////////////////////////
+// DISPLAY CARD VALUES
+/////////////////////////////
+
+function displayValue(value){
+
+    if(value == 1){
+        return "A";
+    }
+
+    if(value == 11){
+        return "J";
+    }
+
+    if(value == 12){
+        return "Q";
+    }
+
+    if(value == 13){
+        return "K";
+    }
+
+    return value;
+}
+
+/////////////////////////////
+// START GAME
+/////////////////////////////
+
+createDeck();
+
+shuffleDeck();
+
+dealCards();
+
+</script>
+
+</body>
+</html>
